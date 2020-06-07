@@ -1,5 +1,6 @@
 package com.hackerrank.stocktrade.handler;
 
+import com.hackerrank.stocktrade.Constant;
 import com.hackerrank.stocktrade.exceptions.NoTradesForDateException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,7 @@ public class StockTradesErrorHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {NoTradesForDateException.class})
     public ResponseEntity<Object> handleNoTradeException(NoTradesForDateException ex, WebRequest request){
-        ErrorMessage message = new ErrorMessage("There are no trades in the given date range");
+        ErrorMessage message = new ErrorMessage(Constant.NO_TRADES_FOR_DATE_RANGE);
         return handleExceptionInternal(ex, message, new HttpHeaders(), HttpStatus.OK, request);
     }
 }
