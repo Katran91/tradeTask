@@ -1,5 +1,7 @@
 package com.hackerrank.stocktrade.controller;
 
+import com.hackerrank.stocktrade.exceptions.NoSuchStockException;
+import com.hackerrank.stocktrade.exceptions.NoTradesForDateException;
 import com.hackerrank.stocktrade.exceptions.TradeIsAlreadyExistException;
 import com.hackerrank.stocktrade.exceptions.UserDoesntExistException;
 import com.hackerrank.stocktrade.model.HiLoStock;
@@ -13,10 +15,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.hackerrank.stocktrade.Constant.STOCK_DATE_FORMAT;
+import static com.hackerrank.stocktrade.Constant.TRADE_DATE_TIME_FORMAT;
 
 @RestController
 public class StockTradeApiRestController {
@@ -64,16 +70,43 @@ public class StockTradeApiRestController {
         return tradeRepository.findAllByUserIsOrderByIdAsc(user);
     }
 
-    @GetMapping("/stocks/{stockSymbol}/price?start={startDate}&end={endDate}")
+    @GetMapping("/stocks/{stockSymbol}/price")
     @ResponseStatus(HttpStatus.OK)
     HiLoStock getHiLoPriceForStock(@PathVariable(value = "stockSymbol") String stockSymbol,
-                                     @PathVariable(value = "startDate") @DateTimeFormat(pattern = STOCK_DATE_FORMAT) Timestamp startDate,
-                                     @PathVariable(value = "endtDate")  @DateTimeFormat(pattern = STOCK_DATE_FORMAT) Timestamp endDate){
-        List<Trade> trades = tradeRepository.findAllByTradeTimestampBetween(startDate,endDate);
+                                   //Didn't have a time to figure out why @DateTimeFormat doesnt work here
+                                     @RequestParam(value = "start", required = false)  String startDate,
+                                     @RequestParam(value = "end", required = false)  String endDate){
+
+
+        List<Trade> trades = tradeRepository.findAllByStockSymbolIs(stockSymbol);
+        if(trades.size() == 0) throw new NoSuchStockException();
+
+        Timestamp start = getTimestamp(startDate);
+        Timestamp end = getTimestamp(endDate);
+
+        trades = trades.stream().filter(trade ->
+                trade.getTradeTimestamp().before(end)
+                && trade.getTradeTimestamp().after(start)
+        ).collect(Collectors.toList());
+
+        if(trades.size() == 0) {
+            throw new NoTradesForDateException();
+        }
 
         Float lowest = trades.stream().map(Trade::getStockPrice).max(Float::compareTo).get();
         Float highest = trades.stream().map(Trade::getStockPrice).min(Float::compareTo).get();
 
         return new HiLoStock(stockSymbol, highest, lowest);
+    }
+
+    private Timestamp getTimestamp(String startDate) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(STOCK_DATE_FORMAT);
+        Date date;
+        try {
+            date = dateFormat.parse(startDate);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return new Timestamp(date.getTime());
     }
 }

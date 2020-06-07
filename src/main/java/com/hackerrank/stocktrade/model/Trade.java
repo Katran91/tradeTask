@@ -6,10 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
-import static com.hackerrank.stocktrade.Constant.STOCK_DATE_FORMAT;
+import static com.hackerrank.stocktrade.Constant.TRADE_DATE_TIME_FORMAT;
 
 @Entity
-@Table(name = "trade")
 public class Trade {
     private @Id Long id;
     private String type;
@@ -21,7 +20,7 @@ public class Trade {
     @JsonProperty("price")
     private Float stockPrice;
     @JsonProperty("timestamp")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern= STOCK_DATE_FORMAT)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern= TRADE_DATE_TIME_FORMAT)
     private Timestamp tradeTimestamp;
 
     public Trade() {

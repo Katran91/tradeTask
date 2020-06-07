@@ -4,7 +4,6 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "user")
 public class User {
     private @Id Long id;
     private String name;

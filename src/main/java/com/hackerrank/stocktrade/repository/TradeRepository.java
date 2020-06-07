@@ -8,8 +8,9 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public interface TradeRepository extends JpaRepository<Trade, Long> {
-    public List<Trade> findAllByOrderByIdAsc();
+    List<Trade> findAllByOrderByIdAsc();
 
-    public List<Trade> findAllByUserIsOrderByIdAsc(User user);
-    public List<Trade> findAllByTradeTimestampBetween(Timestamp startDate, Timestamp endDate);
+    List<Trade> findAllByUserIsOrderByIdAsc(User user);
+    List<Trade> findAllByStockSymbolIs(String stock);
+    List<Trade> findAllByTradeTimestampBetween(Timestamp startDate, Timestamp endDate);
 }
