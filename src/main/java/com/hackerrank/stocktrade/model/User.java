@@ -1,8 +1,15 @@
 package com.hackerrank.stocktrade.model;
 
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
+@Table(name = "user")
 public class User {
-    private Long id;
+    private @Id Long id;
     private String name;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Trade> trades;
 
     public User() {
     }

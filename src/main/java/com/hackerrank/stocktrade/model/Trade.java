@@ -1,25 +1,38 @@
 package com.hackerrank.stocktrade.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.persistence.*;
 import java.sql.Timestamp;
 
+import static com.hackerrank.stocktrade.Constant.STOCK_DATE_FORMAT;
+
+@Entity
+@Table(name = "trade")
 public class Trade {
-    private Long id;
+    private @Id Long id;
     private String type;
+    @ManyToOne
     private User user;
+    @JsonProperty("symbol")
     private String stockSymbol;
-    private Integer stockQuantity;
+    private Integer shares;
+    @JsonProperty("price")
     private Float stockPrice;
+    @JsonProperty("timestamp")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern= STOCK_DATE_FORMAT)
     private Timestamp tradeTimestamp;
 
     public Trade() {
     }
 
-    public Trade(Long id, String type, User user, String stockSymbol, Integer stockQuantity, Float stockPrice, Timestamp tradeTimestamp) {
+    public Trade(Long id, String type, User user, String stockSymbol, Integer shares, Float stockPrice, Timestamp tradeTimestamp) {
         this.id = id;
         this.type = type;
         this.user = user;
         this.stockSymbol = stockSymbol;
-        this.stockQuantity = stockQuantity;
+        this.shares = shares;
         this.stockPrice = stockPrice;
         this.tradeTimestamp = tradeTimestamp;
     }
@@ -56,12 +69,12 @@ public class Trade {
         this.stockSymbol = stockSymbol;
     }
 
-    public Integer getStockQuantity() {
-        return stockQuantity;
+    public Integer getShares() {
+        return shares;
     }
 
-    public void setStockQuantity(Integer stockQuantity) {
-        this.stockQuantity = stockQuantity;
+    public void setShares(Integer stockQuantity) {
+        this.shares = stockQuantity;
     }
 
     public Float getStockPrice() {
